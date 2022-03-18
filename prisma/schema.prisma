@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:filip123@localhost:3306/company"
+}
+
+model Project {
+  id             Int               @id @default(autoincrement())
+  name           String
+  description    String
+  BETechnologies String            @map("backend_technology")
+  FETechnologies String            @map("frontend_technology")
+  startTime      DateTime          @map("start_time")
+  endTime        DateTime          @map("end_time")
+  developers     ProjectsOnUsers[]
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @default(now()) @map("updated_at")
+
+  @@map("project")
+}
+
+model Developer {
+  id           Int               @id @default(autoincrement())
+  name         String
+  position     String
+  startWorking DateTime          @map("start_date")
+  experiance   String
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @default(now()) @map("updated_at")
+  projects     ProjectsOnUsers[]
+
+  @@map("developer")
+}
+
+model ProjectsOnUsers {
+  developer   Developer @relation(fields: [developerId], onUpdate: Cascade, onDelete: Cascade, references: [id])
+  developerId Int
+  project     Project   @relation(fields: [projectId], onUpdate: Cascade, onDelete: Cascade, references: [id])
+  projectId   Int
+
+  @@id([developerId, projectId])
+  @@map("fk_users_projects")
+}
